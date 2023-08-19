@@ -7,6 +7,7 @@ TagManager:
   - WAF
   - Hazard
   - Checkpoint
+  - Heal
   layers:
   - Default
   - TransparentFX

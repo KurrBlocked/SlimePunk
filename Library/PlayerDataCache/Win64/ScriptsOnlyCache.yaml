@@ -2,7 +2,12 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - CameraZone
+    - Checkpoint
     - CheckpointManager
+    - Collectable
+    - Door
+    - GameStateManager
+    - Key
     - PlayerController
     - PlayerUI
     Cinemachine.dll:
@@ -90,6 +95,8 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1488}
     - Class: 114
+      Script: {instanceID: 1530}
+    - Class: 114
       Script: {instanceID: 1560}
     - Class: 114
       Script: {instanceID: 1928}
@@ -102,6 +109,8 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 2878}
     - Class: 114
+      Script: {instanceID: 2882}
+    - Class: 114
       Script: {instanceID: 2896}
     - Class: 114
       Script: {instanceID: 2972}
@@ -112,21 +121,27 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 3322}
     - Class: 114
-      Script: {instanceID: 3734}
+      Script: {instanceID: 3506}
     - Class: 114
-      Script: {instanceID: 4154}
+      Script: {instanceID: 3736}
     - Class: 114
-      Script: {instanceID: 4158}
+      Script: {instanceID: 4156}
     - Class: 114
-      Script: {instanceID: 4374}
+      Script: {instanceID: 4160}
     - Class: 114
-      Script: {instanceID: 4708}
+      Script: {instanceID: 4376}
     - Class: 114
-      Script: {instanceID: 4896}
+      Script: {instanceID: 4548}
     - Class: 114
-      Script: {instanceID: 5368}
+      Script: {instanceID: 4712}
     - Class: 114
-      Script: {instanceID: 5808}
+      Script: {instanceID: 4900}
+    - Class: 114
+      Script: {instanceID: 5372}
+    - Class: 114
+      Script: {instanceID: 5478}
+    - Class: 114
+      Script: {instanceID: 5812}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -552,6 +567,12 @@ ScriptsOnlyBuild:
     className: CinemachineTrack
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Collectable
+  - hash:
+      serializedVersion: 2
       Hash: 5e84370a36252d6aa37d6a7bd37710f7
     assemblyName: Cinemachine.dll
     namespaceName: Cinemachine
@@ -612,7 +633,7 @@ ScriptsOnlyBuild:
     className: CinemachineMixingCamera
   - hash:
       serializedVersion: 2
-      Hash: cfa734cb8491c190a5e0acfd1b2da5ef
+      Hash: 6485a316ae1b974ce6e4dea89d3e7b9c
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerController
@@ -784,6 +805,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: AudioPlayableAsset
+  - hash:
+      serializedVersion: 2
+      Hash: 27ebaa633e4f4014a4763e0bff2ae3e8
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: GameStateManager
   - hash:
       serializedVersion: 2
       Hash: 7c792393fb82488bd20139dcc5ba26d8
@@ -1177,4 +1204,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/Test.unity
-  playerPath: C:/Users/Roger/GitThings/SlimePunk/Builds/SlimePunk/SlimePunk.exe
+  playerPath: C:/Users/Roger/GitThings/Projects/SlimePunk/Builds/SlimePunk_v1/SlimePunk.exe

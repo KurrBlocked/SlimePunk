@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     #region Variables
     public Vector2 startPosition = new Vector2(-14, 0);
     public CheckpointManager checkpointManager;
-    public int totalHealth = 5;
+    public int maxHealth = 5;
     public int healthCount;
 
     //Movement Variables
@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     //Bounce Variables
     public int bouncesRemaining = 0;
     public int maxBounces = 6;
-    private bool isBouncing;
+    public bool isBouncing;
     public float bounceDelayTime = 0f;
     public float bouncePauseAmount = 0f;
 
@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        healthCount = totalHealth;
+        healthCount = maxHealth;
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         circleCollider = GetComponent<CircleCollider2D>();
@@ -401,7 +401,6 @@ public class PlayerController : MonoBehaviour
             }
         }  
     }
-
     private void OnCollisionStay2D(Collision2D collision)
     {
         Vector2 norm1 = new Vector2(Mathf.RoundToInt(collision.contacts[0].normal.x), Mathf.RoundToInt(collision.contacts[0].normal.y)).normalized;
@@ -431,6 +430,13 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("ground");
             }
         }*/
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Heal")
+        {
+            healthCount = maxHealth;
+        }
     }
     private void calculateBounceDirection(Vector2 normal)
     {
@@ -518,11 +524,11 @@ public class PlayerController : MonoBehaviour
             rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxBounceVelocity);
         }
     }
-
     private void Respawn()
     {
         isBouncing = false;
         bouncesRemaining = maxBounces;
+        afterBounceAirTime = 0f;
         rb.velocity = Vector2.zero;
         if (checkpointManager.lastReachedCheckpoint != -1)
         {

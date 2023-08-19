@@ -17,7 +17,7 @@ public class PlayerUI : MonoBehaviour
     {
         localHealthTracker = player.healthCount;
         healthTokens = new GameObject[player.healthCount];
-        for (int x = 0; x < player.totalHealth; x++)
+        for (int x = 0; x < player.maxHealth; x++)
         {
             healthTokens[x] = Instantiate(healthTokenPrefab, new Vector3 (canvas.renderingDisplaySize.x /11  + x * canvas.renderingDisplaySize.x / 30, canvas.renderingDisplaySize.y / 1.066f, 0), Quaternion.identity, transform);
         }
@@ -35,8 +35,6 @@ public class PlayerUI : MonoBehaviour
         {
             textMeshPro.text = "0";
         }
-        
-
         if (localHealthTracker != player.healthCount)
         {
             foreach (GameObject token in healthTokens)
@@ -47,6 +45,7 @@ public class PlayerUI : MonoBehaviour
             {
                 healthTokens[x].SetActive(true);
             }
+            localHealthTracker = player.healthCount;
         }
     }
 }
