@@ -96,8 +96,10 @@ public class PlayerController : MonoBehaviour
 
 
     //Testing variables
+    public InputActionReference cheatmodeAction;
     public float timescale = 1f;
     public bool spawnAtStart = true;
+    public bool cheatmode = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -129,12 +131,14 @@ public class PlayerController : MonoBehaviour
         movementAction.action.Enable();
         jumpAction.action.Enable();
         bounceAction.action.Enable();
+        cheatmodeAction.action.Enable();
     }
     private void OnDisable()
     {
         movementAction.action.Disable();
         jumpAction.action.Disable();
         bounceAction.action.Disable();
+        cheatmodeAction.action.Disable();
     }
     private void Update()
     {
@@ -164,6 +168,10 @@ public class PlayerController : MonoBehaviour
             bounceDirectionalInfluence = new Vector2(Mathf.Round(moveInput.x), Mathf.Round(moveInput.y));
         }
         #endregion
+        if (cheatmodeAction.action.WasPressedThisFrame())
+        {
+            cheatmode = !cheatmode;
+        }
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -363,7 +371,10 @@ public class PlayerController : MonoBehaviour
         {
             if (collision.collider.tag == "Hazard")
             {
-                healthCount--;
+                if (!cheatmode)
+                {
+                    healthCount--;
+                }
                 Respawn();
             }
             else

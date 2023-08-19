@@ -34,6 +34,7 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.TileDragAndDropManager
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
     Unity.InputSystem.dll:
+    - UnityEngine.InputSystem.Editor.InputActionEditorWindow
     - UnityEngine.InputSystem.InputActionAsset
     - UnityEngine.InputSystem.InputActionReference
     - UnityEngine.InputSystem.InputSettings
@@ -633,7 +634,7 @@ ScriptsOnlyBuild:
     className: CinemachineMixingCamera
   - hash:
       serializedVersion: 2
-      Hash: 6485a316ae1b974ce6e4dea89d3e7b9c
+      Hash: 528313a6ee09509bc481475ed8c97ee0
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerController
