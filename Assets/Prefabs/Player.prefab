@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 9107230218583875964}
   - component: {fileID: 9107230218583875965}
   - component: {fileID: 9107230218583875907}
-  - component: {fileID: 9107230218583875906}
   - component: {fileID: 8421782267247770634}
+  - component: {fileID: 7491175873084746349}
   - component: {fileID: 9107230218583875905}
   - component: {fileID: 1013608887230215841}
   m_Layer: 0
@@ -108,32 +108,6 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!61 &9107230218583875906
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9107230218583875966}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 9c5c1e62d8b63b74fabb2a359075e29e, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.005280733, y: -0.0020354986}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 2}
-    newSize: {x: 2, y: 2}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.7537255, y: 1.9959288}
-  m_EdgeRadius: 0
 --- !u!58 &8421782267247770634
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -150,6 +124,37 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.71
+--- !u!60 &7491175873084746349
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9107230218583875966}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 2}
+    newSize: {x: 2, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.3, y: -0.98}
+      - {x: 0.68725, y: -0.25}
+      - {x: 0.3125, y: 1}
+      - {x: -0.125, y: 1}
+      - {x: -0.625, y: -0.25}
+      - {x: -0.25, y: -0.98}
 --- !u!114 &9107230218583875905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,44 +200,51 @@ MonoBehaviour:
   movementAction: {fileID: -8081643727733329304, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   jumpAction: {fileID: -3043690351501930273, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   bounceAction: {fileID: -3586376901136770201, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
-  totalHealth: 5
+  startPosition: {x: -14, y: 0}
+  checkpointManager: {fileID: 0}
+  maxHealth: 5
   healthCount: 0
   moveSpeed: 14
   acceleration: 5
   deceleration: 20
   velPower: 0.9
-  jumpForce: 5.5
+  jumpForce: 5
   jumpSpeedMultiplier: 3.2
   jumpCoyoteTime: 0.15
   jumpBufferTime: 0.1
   jumpCutMultiplier: 0.1
-  fallGravityMultiplier: 3
+  fallGravityMultiplier: 2.5
+  airTimeThreshold: 0.4
+  airTimeLossRate: 0.08
   bouncesRemaining: 0
-  maxBounces: 6
-  bounceDelayTime: 0
-  bouncePauseAmount: 0
-  bounceMomentum: 1550
-  bounceMomentumDecayRate: 75
+  maxBounces: 7
+  isBouncing: 0
+  bounceMomentum: 1700
+  bounceMomentumDecayRate: 120
   bounceMass: 9
   regularMass: 1
-  bounceDrag: 2.2
+  bounceDrag: 2.5
   regularDrag: 0.5
-  bounceMoveMultiplier: 150
+  bounceMoveMultiplier: 300
   bounceGravityMultiplier: 2
-  bounceFallGravityMultiplier: 3
-  bounceVelocityMultiplier: 1.01
+  bounceFallGravityMultiplier: 5
   horizontalInfluenceMultiplier: 0.4
-  verticalInfluenceMultiplier: 2.5
-  extraMomentumBuildRate: 10
+  verticalInfluenceMultiplier: 2
+  extraMomentumBuildRate: 20
   extraMomentum: 0
-  diagonalBounceDirectionDampener: 1.4
-  singularBounceDirectionDampener: 1.4
   afterBounceAirTime: 0.1
   currentAfterBounceAirTime: 0
-  afterBounceAirTimeGravityMultiplier: 0.8
+  afterBounceAirTimeGravityMultiplier: 0.02
+  verticleBounceMomentumLoss: 5
+  horizontalBounceMomentumLoss: 5
+  leftoverMomentumLossRate: 1.8
+  leftoverMomentumLossPercentageThreshold: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   bounceMode: {fileID: -4154336704712441092, guid: 53ffee92211e4a64ba44141694ba3c73, type: 3}
   normalMode: {fileID: -2400533203064184042, guid: 53ffee92211e4a64ba44141694ba3c73, type: 3}
+  cheatmodeAction: {fileID: -611638268938300185, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   timescale: 1
+  spawnAtStart: 1
+  cheatmode: 0

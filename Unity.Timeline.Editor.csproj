@@ -256,8 +256,8 @@
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Actions\ClipsActions.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Manipulators\Sequence\TrimClip.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Items\ItemsUtils.cs" />
-    <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\treeview\ItemGui\TimelineMarkerClusterGUI.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Signals\TreeView\SignalReceiverItem.cs" />
+    <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\treeview\ItemGui\TimelineMarkerClusterGUI.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Manipulators\Move\MovingItems.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Manipulators\Move\MoveItemModeReplace.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Window\PlaybackScroller.cs" />

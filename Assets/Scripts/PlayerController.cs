@@ -25,53 +25,55 @@ public class PlayerController : MonoBehaviour
 
 
     //Jump Variables
-    public float jumpForce = 5.5f;
+    public float jumpForce = 5f;
     public float jumpSpeedMultiplier = 3.2f;
     private bool isJumping = false;
     public float jumpCoyoteTime = 0.15f;
     public float jumpBufferTime = 0.1f;
     public float jumpCutMultiplier = 0.1f;
     private float gravityScale;
-    public float fallGravityMultiplier = 3f;
+    public float fallGravityMultiplier = 2.5f;
     private float lastGroundedTime = 0f;
     private float lastJumpTime = 0f;
-    private float airTimeFactor = 1f;
-    public float airTimeThreshold = 0.5f;
-    public float airTimeLossRate = 0.1f;
+    
+    public float jumpMoveSpeed = 8f;
+    public float jumpAcceleration = 20f;
+    public float jumpDeceleration = 0.1f;
+    public float jumpVelPower = 1f;
+    public int shortJumpTimeThreshold = 45;
+    public float shortJumpReduction = 1.05f;
 
     //Bounce Variables
     public int bouncesRemaining = 0;
-    public int maxBounces = 6;
+    public int maxBounces = 7;
     public bool isBouncing;
-    public float bounceDelayTime = 0f;
-    public float bouncePauseAmount = 0f;
 
-    public float bounceMomentum = 1550f;
-    public float bounceMomentumDecayRate = 75f;
+    public float bounceMomentum = 1700f;
+    public float bounceMomentumDecayRate = 120f;
     private float currentBounceMomentum = 0f;
 
     public float bounceMass = 9f;
     public float regularMass = 1f;
-    public float bounceDrag = 2.2f;
+    public float bounceDrag = 2.5f;
     public float regularDrag = 0.5f;
     private Vector2 bounceDirection;
-    public float bounceMoveMultiplier = 150f;
+    public float bounceMoveMultiplier = 300f;
     public float bounceGravityMultiplier = 2f;
-    public float bounceFallGravityMultiplier = 3f;
-    public float bounceVelocityMultiplier = 1.01f;
-    private Vector2 bounceDirectionalInfluence;
+    public float bounceFallGravityMultiplier = 5f;
+    private float bounceHorizontalInfluence;
+    private float bounceVerticalInfluence;
     public float horizontalInfluenceMultiplier = 0.4f;
-    public float verticalInfluenceMultiplier = 2.5f;
-    public float extraMomentumBuildRate = 10f;
+    public float verticalInfluenceMultiplier = 2f;
+    public float extraMomentumBuildRate = 20f;
     public float extraMomentum;
-    public float diagonalBounceDirectionDampener = 1.4f;
-    public float singularBounceDirectionDampener = 1.4f;
     public float afterBounceAirTime = 0.1f;
     public float currentAfterBounceAirTime = 0f;
-    public float afterBounceAirTimeGravityMultiplier = 0.8f;
-    public float velocityClampingMomentumThreshold = 2000f;
-    public float maxBounceVelocity = 15f;
-    public float carryOverMomentumReductionRate = 0.3f;
+    public float afterBounceAirTimeGravityMultiplier = 0.02f;
+    public float verticleBounceMomentumLoss = 5f;
+    public float horizontalBounceMomentumLoss = 5f;
+    public float leftoverMomentumLossRate = 1.5f;
+    public float leftoverMomentumLossPercentageThreshold = 0.5f;
+    private float jumpPressTime = 0f;
     #endregion
 
     //Inputs
@@ -86,8 +88,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 groundCheckBoxSize = new Vector2(0.7f, 0.1f);
 
     //Collider References
-    private CircleCollider2D circleCollider;
-    private BoxCollider2D boxCollider;
+    private CircleCollider2D bounceModeCollider;
+    private PolygonCollider2D regularModeCollider;
 
     //Sprites
     private SpriteRenderer spriteRenderer;
@@ -107,20 +109,19 @@ public class PlayerController : MonoBehaviour
         healthCount = maxHealth;
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        circleCollider = GetComponent<CircleCollider2D>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        bounceModeCollider = GetComponent<CircleCollider2D>();
+        regularModeCollider = GetComponent<PolygonCollider2D>();
         currentBounceMomentum = 0f;
         extraMomentum = 0f;
         bounceDirection = Vector2.zero;
-        bounceDelayTime = 0f;
         currentAfterBounceAirTime = 0f;
         jumpWasReleased = true;
         spriteRenderer.sprite = normalMode;
         isBouncing = false;
         isJumping = false;
         gravityScale = rb.gravityScale;
-        circleCollider.enabled = isBouncing;
-        boxCollider.enabled = !isBouncing;
+        bounceModeCollider.enabled = isBouncing;
+        regularModeCollider.enabled = !isBouncing;
         if (spawnAtStart)
         {
             transform.position = startPosition;
@@ -145,27 +146,29 @@ public class PlayerController : MonoBehaviour
         #region Inputs
         moveInput = movementAction.action.ReadValue<Vector2>();
         jumpIsPressedInput = jumpAction.action.IsPressed();
-        
-
         bounceInput = bounceAction.action.WasPressedThisFrame();
         #endregion
         CheckGrounded();
         #region Bounce Influence Input
+        if (jumpIsPressedInput)
+        {
+            jumpPressTime++;
+        }
+        else if (jumpWasReleased)
+        {
+            jumpPressTime = 0;
+        }
         if (bounceInput)
         {
             if (bouncesRemaining >= 0)
             {
                 isBouncing = !isBouncing;
-                //If player leaves bouncemode prematurely, set slowfall timer
-                if (!isBouncing)
-                {
-                    currentAfterBounceAirTime = afterBounceAirTime;
-                }
             }
         }
         if (isBouncing)
         {
-            bounceDirectionalInfluence = new Vector2(Mathf.Round(moveInput.x), Mathf.Round(moveInput.y));
+            bounceHorizontalInfluence = Mathf.Round(moveInput.x);
+            bounceVerticalInfluence = Mathf.Round(moveInput.y);
         }
         #endregion
         if (cheatmodeAction.action.WasPressedThisFrame())
@@ -183,15 +186,15 @@ public class PlayerController : MonoBehaviour
         #region Jump Logic
         if (jumpWasReleased && jumpIsPressedInput && lastGroundedTime > 0 && lastJumpTime < 0 && !isBouncing && !isJumping)
         {
+            rb.velocity = new Vector2(rb.velocity.x/2f, rb.velocity.y);
             Jump();
             jumpWasReleased = false;
-            
+        }
+        if (!jumpIsPressedInput && isJumping && jumpPressTime > 10 && jumpPressTime < shortJumpTimeThreshold && !isBouncing)
+        {
+            rb.velocity = new Vector2 (rb.velocity.x, rb.velocity.y / shortJumpReduction);
         }
         //If player releases jump button while in the middle of a jump, reduce y velocity to cut jump short
-        if (rb.velocity.y > 0 && !jumpIsPressedInput && !isBouncing)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpCutMultiplier);
-        }
         #endregion
         #region Gravity Fall Scale
         if (rb.velocity.y <= 0 && !isBouncing && currentAfterBounceAirTime <= 0)
@@ -230,19 +233,7 @@ public class PlayerController : MonoBehaviour
         #region Additional Bounce Force
         if (isBouncing)
         {
-            //Add a small freeze between a bounce
-            if (bounceDelayTime > 0)
-            {
-                rb.velocity = Vector2.zero;
-                rb.constraints = (RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation);
-            }
-            else
-            {
-                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                Bounce();
-                
-            }
-            
+            Bounce();
         }
         #endregion
     }
@@ -250,14 +241,6 @@ public class PlayerController : MonoBehaviour
     {
         lastGroundedTime -= Time.deltaTime;
         lastJumpTime -= Time.deltaTime;
-        if (bounceDelayTime > 0)
-        {
-            bounceDelayTime -= Time.deltaTime;
-        }
-        else
-        {
-            bounceDelayTime = 0f;
-        }
         if (currentAfterBounceAirTime > 0)
         {
             currentAfterBounceAirTime -= Time.deltaTime;
@@ -266,23 +249,24 @@ public class PlayerController : MonoBehaviour
         {
             currentAfterBounceAirTime = 0f;
         }
-
-        //Reduce amount of horizontal movement possible for the player the longer they are in the air for
-        if (!isGrounded && !isBouncing && airTimeFactor > airTimeThreshold)
-        {
-            airTimeFactor -= (Time.deltaTime * airTimeLossRate);
-        }
-        else if (isGrounded)
-        {
-            airTimeFactor = 1f;
-        }
-
     }
     private void Move()
     {
         if (isBouncing)
         {
             rb.AddForce(Mathf.Round(moveInput.x) * Vector2.right * bounceMoveMultiplier);
+        }
+        else if (isJumping)
+        {
+            //Calculates speed the player wants to go based on movement input
+            float targetSpeed = moveInput.x * jumpMoveSpeed;
+            //Calculate the difference between the player's desired speed and the actual speed
+            float speedDif = targetSpeed - rb.velocity.x;
+            //Checks if targetspeed is close to zero if so decelrate otherwise accelerate
+            float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? jumpAcceleration : jumpDeceleration;
+            float movement = Mathf.Pow(Mathf.Abs(speedDif) * accelRate, jumpVelPower) * Mathf.Sign(speedDif);
+            // Apply physics-based movement using Rigidbody
+            rb.AddForce(new Vector2(movement, 0f));
         }
         else
         {
@@ -298,9 +282,8 @@ public class PlayerController : MonoBehaviour
         }
         if (!isGrounded && !isBouncing)
         {
-            rb.velocity = new Vector2(rb.velocity.x * airTimeFactor, rb.velocity.y);
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);
         }
-        
     }
     private void CheckGrounded()
     {
@@ -334,20 +317,21 @@ public class PlayerController : MonoBehaviour
         //Zero out y velocity for coyote time jumps to feel normal
         rb.velocity = new Vector2(rb.velocity.x, 0);
         lastJumpTime = jumpBufferTime;
-        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Force);
         rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpSpeedMultiplier);
         isJumping = true;
     }
     private void ToggleBounceMode()
     {
         //Toggles Bounce properties such as collider type and gravity multiplier
-        circleCollider.enabled = isBouncing;
-        boxCollider.enabled = !isBouncing;
+        bounceModeCollider.enabled = isBouncing;
+        regularModeCollider.enabled = !isBouncing;
         //Add slight upwards force to prevent getting stuck to floor when leaving bouncemode
         if (bouncesRemaining == 0  && isBouncing)
         {
             rb.AddForce(Vector2.up, ForceMode2D.Impulse);
-        }else if (isBouncing && bouncesRemaining > 0)
+        }
+        else if (isBouncing && bouncesRemaining > 0)
         {
             spriteRenderer.sprite = bounceMode;
             rb.mass = bounceMass;
@@ -382,13 +366,24 @@ public class PlayerController : MonoBehaviour
                 Vector2 norm1 = new Vector2(Mathf.RoundToInt(collision.contacts[0].normal.x), Mathf.RoundToInt(collision.contacts[0].normal.y)).normalized;
                 if (isBouncing)
                 {
-                    bounceDelayTime = bouncePauseAmount;
-                    currentBounceMomentum = bounceMomentum + extraMomentum + Mathf.Round(currentBounceMomentum * carryOverMomentumReductionRate);
-                    Debug.Log(currentBounceMomentum);
+                    float leftoverMomentum = currentBounceMomentum;
+                    currentBounceMomentum = bounceMomentum + extraMomentum;
+                    if (leftoverMomentum / currentBounceMomentum < leftoverMomentumLossPercentageThreshold)
+                    {
+                        currentBounceMomentum += leftoverMomentum / leftoverMomentumLossRate;
+                    }
                     extraMomentum = 0f;
                     bouncesRemaining--;
                     //Naturalize velocity and gravity scale to make consistent bounces
-                    rb.velocity = Vector2.zero;
+                    if (Mathf.Abs(norm1.x) > 0)
+                    {
+                        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / verticleBounceMomentumLoss);
+                    }
+                    else
+                    {
+                        rb.velocity = new Vector2( rb.velocity.x / horizontalBounceMomentumLoss, rb.velocity.y);
+                    }
+                    
                     rb.gravityScale = gravityScale;
                     if (collision.contacts.Length > 1)
                     {
@@ -401,14 +396,6 @@ public class PlayerController : MonoBehaviour
                     }
                     //Debug.Log("Collisions : " + collision.contacts.Length + "|| Normal : " + collision.contacts[0].normal + "|| Bounce Direction : " + bounceDirection + "|| Bounce Direction Influence : " + bounceDirectionalInfluence);
                 }
-                /*if (!isGrounded && !isBouncing)
-                {
-                    if (norm1 == new Vector2(0, 1))
-                    {
-                        rb.velocity = Vector2.zero;
-                        Debug.Log("ground");
-                    }
-                }*/
             }
         }  
     }
@@ -433,14 +420,6 @@ public class PlayerController : MonoBehaviour
                 currentBounceMomentum = bounceMomentum;
             }
         }
-        /*if (!isGrounded && !isBouncing)
-        {
-            if (norm1 == new Vector2(0, 1))
-            {
-                rb.velocity = Vector2.zero;
-                Debug.Log("ground");
-            }
-        }*/
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -449,75 +428,101 @@ public class PlayerController : MonoBehaviour
             healthCount = maxHealth;
         }
     }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.tag == "Hazard")
+        {
+            healthCount--;
+        }
+    }
     private void calculateBounceDirection(Vector2 normal)
     {
         //Make consistent normal vectors
-        //normal = new Vector2 (Mathf.RoundToInt(collision.contacts[0].normal.x), Mathf.RoundToInt(collision.contacts[0].normal.y)).normalized;
         //Checks collision from cardinal directions
-        if (normal == new Vector2(0, -1))
+        bounceDirection = Vector2.zero;
+        if (Mathf.Abs(normal.x) > Mathf.Abs(normal.y))// Collision is left or right
         {
-            //collision on up
-            bounceDirection = new Vector2(bounceDirectionalInfluence.x * horizontalInfluenceMultiplier * 2f, -1f).normalized;
-        }
-        else if (normal == new Vector2(0, 1))
-        {
-            //collision on down
-            
-            bounceDirection = new Vector2(bounceDirectionalInfluence.x * horizontalInfluenceMultiplier, 1f).normalized;
-        }
-        else if (normal == new Vector2(-1, 0))
-        {
-            //collision on right
-
-            bounceDirection = new Vector2(-1f, bounceDirectionalInfluence.y * verticalInfluenceMultiplier).normalized;
-
-        }
-        else if (normal == new Vector2(1, 0))
-        {
-            //collision on left
-            bounceDirection = new Vector2(1f, bounceDirectionalInfluence.y * verticalInfluenceMultiplier).normalized;
-
-        }
-        else//Checks collision from diagonal directions
-        {
-            if (normal.x < 0)
+            if (normal == new Vector2(-1, 0))
             {
-                if (normal.y < 0)
+                //collision on right
+                if (bounceVerticalInfluence == 0)
                 {
-                    //collision upper right 
-                    bounceDirection = (new Vector2(-0.6f, -1).normalized / diagonalBounceDirectionDampener + new Vector2(bounceDirectionalInfluence.x * horizontalInfluenceMultiplier, 0f)).normalized;
+                    if (rb.velocity.y < -1f)
+                    {
+                        bounceVerticalInfluence = -1f;
+                    }
+                    else
+                    {
+                        bounceVerticalInfluence = 1f;
+                    }
                 }
-                else
+                bounceDirection = new Vector2(-1f, bounceVerticalInfluence * verticalInfluenceMultiplier).normalized;            
+                bounceHorizontalInfluence = -1f;
+            }
+            else if (normal == new Vector2(1, 0))
+            {
+                //collision on left
+                if (bounceVerticalInfluence == 0)
                 {
-                    //collision downward right
-                    bounceDirection = (new Vector2(-0.6f, 1).normalized / diagonalBounceDirectionDampener + new Vector2(bounceDirectionalInfluence.x * horizontalInfluenceMultiplier, 0f)).normalized;
+                    if (rb.velocity.y < -1f)
+                    {
+                        bounceVerticalInfluence = -1f;
+                    }
+                    else
+                    {
+                        bounceVerticalInfluence = 1f;
+                    }
                 }
+                bounceDirection = new Vector2(1f, bounceVerticalInfluence * verticalInfluenceMultiplier).normalized;
+                bounceHorizontalInfluence = 1f;
+            }
+        }
+        else // Collision is up or down
+        {
+            if (normal == new Vector2(0, -1))
+            {
+                //collision on up
+                if (bounceHorizontalInfluence == 0f)
+                {
+                    if (rb.velocity.x > 0.5f)
+                    {
+                        bounceHorizontalInfluence = 1f;
+                    }
+                    else if (rb.velocity.x < -0.5f)
+                    {
+                        bounceHorizontalInfluence = -1f;
+                    }
+                }
+                bounceDirection = new Vector2(bounceHorizontalInfluence * horizontalInfluenceMultiplier * 2f, -1f).normalized;
+            }
+            else if (normal == new Vector2(0, 1))
+            {
+                //collision on down
+                if (bounceHorizontalInfluence == 0f)
+                {
+                    if (rb.velocity.x > 0.5f)
+                    {
+                        bounceHorizontalInfluence = 1f;
+                    }
+                    else if (rb.velocity.x < -0.5f)
+                    {
+                        bounceHorizontalInfluence = -0.5f;
+                    }
+                }
+                bounceDirection = new Vector2(bounceHorizontalInfluence * horizontalInfluenceMultiplier, 1f).normalized;
             }
             else
             {
-                if (normal.y < 0)
-                {
-                    //collision upper  left
-                    bounceDirection = (new Vector2(0.6f, -1).normalized / diagonalBounceDirectionDampener + new Vector2(bounceDirectionalInfluence.x * horizontalInfluenceMultiplier, 0f)).normalized;
-                }
-                else
-                {
-                    //collision downard left
-                    bounceDirection = (new Vector2(0.6f, 1).normalized / diagonalBounceDirectionDampener + new Vector2(bounceDirectionalInfluence.x * horizontalInfluenceMultiplier, 0f)).normalized;
-                }
+                //Diagonal collisions
+                bounceDirection = normal/1.5f;
             }
-
         }
-        if (bounceDirection == Vector2.left || bounceDirection == Vector2.right)// Singular directional forces left and right are dampened to reduce unnatural bouncing
-        {
-            bounceDirection /= singularBounceDirectionDampener;
-        }
+        bounceDirection *= 1.1f;
     }
     private void Bounce()
     {
         rb.AddForce(bounceDirection * currentBounceMomentum);
-        rb.velocity = new Vector2 (rb.velocity.x * bounceVelocityMultiplier, rb.velocity.y * bounceVelocityMultiplier);
-        if (currentBounceMomentum > 0)
+        if (currentBounceMomentum - bounceMomentumDecayRate > 0)
         {
             currentBounceMomentum -= bounceMomentumDecayRate;
         }
@@ -526,14 +531,6 @@ public class PlayerController : MonoBehaviour
             currentBounceMomentum = 0f;
             extraMomentum += extraMomentumBuildRate;
         }
-        if (currentBounceMomentum < 0)
-        {
-            currentBounceMomentum = 0f;
-        }
-        if (currentBounceMomentum > velocityClampingMomentumThreshold)
-        {
-            rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxBounceVelocity);
-        }
     }
     private void Respawn()
     {
@@ -541,6 +538,8 @@ public class PlayerController : MonoBehaviour
         bouncesRemaining = maxBounces;
         afterBounceAirTime = 0f;
         rb.velocity = Vector2.zero;
+        ToggleBounceMode();
+        CheckGrounded();
         if (checkpointManager.lastReachedCheckpoint != -1)
         {
             transform.position = checkpointManager.checkpoints[checkpointManager.lastReachedCheckpoint].transform.position;

@@ -57,14 +57,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Checkpoint.cs" />
+    <Compile Include="Assets\Scripts\BombingTurret.cs" />
+    <Compile Include="Assets\Scripts\FlyingDrone.cs" />
     <Compile Include="Assets\Scripts\CheckpointManager.cs" />
     <Compile Include="Assets\Scripts\Key.cs" />
     <Compile Include="Assets\Scripts\CameraZone.cs" />
-    <Compile Include="Assets\Scripts\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\PlayerUI.cs" />
-    <Compile Include="Assets\Scripts\Door.cs" />
     <Compile Include="Assets\Scripts\Collectable.cs" />
+    <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Bullet.cs" />
     <Compile Include="Assets\Scripts\GameStateManager.cs" />
+    <Compile Include="Assets\Scripts\PlayerUI.cs" />
+    <Compile Include="Assets\Scripts\BombingTurretExplosion.cs" />
+    <Compile Include="Assets\Scripts\Door.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

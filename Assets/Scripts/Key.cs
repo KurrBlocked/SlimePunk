@@ -6,13 +6,13 @@ public class Key : MonoBehaviour
 {
 
     private PlayerController player;
-    private CircleCollider2D collider;
+    private CircleCollider2D collid;
     // Start is called before the first frame update
     void Start()
     {
         gameObject.SetActive(true);
         player = FindAnyObjectByType<PlayerController>();
-        collider = GetComponent<CircleCollider2D>();
+        collid = GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame

@@ -34,7 +34,6 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.TileDragAndDropManager
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
     Unity.InputSystem.dll:
-    - UnityEngine.InputSystem.Editor.InputActionEditorWindow
     - UnityEngine.InputSystem.InputActionAsset
     - UnityEngine.InputSystem.InputActionReference
     - UnityEngine.InputSystem.InputSettings
@@ -1205,4 +1204,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/Test.unity
-  playerPath: C:/Users/Roger/GitThings/Projects/SlimePunk/Builds/SlimePunk_v1/SlimePunk.exe
+  playerPath: C:/Users/Roger/GitThings/Projects/SlimePunk/Builds/Tweaked/SlimePunk.exe
