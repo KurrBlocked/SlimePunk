@@ -9,6 +9,8 @@ TagManager:
   - Checkpoint
   - Heal
   - Enemy
+  - HardHazard
+  - SoftHazard
   layers:
   - Default
   - TransparentFX

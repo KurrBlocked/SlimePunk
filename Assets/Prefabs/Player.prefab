@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2400533203064184042, guid: 53ffee92211e4a64ba44141694ba3c73, type: 3}
+  m_Sprite: {fileID: -2400533203064184042, guid: 41732f0eb68fc394d8488d060e153212, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -123,7 +123,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.71
+  m_Radius: 0.8
 --- !u!60 &7491175873084746349
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -149,12 +149,14 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.3, y: -0.98}
-      - {x: 0.68725, y: -0.25}
-      - {x: 0.3125, y: 1}
-      - {x: -0.125, y: 1}
+    - - {x: 0.375, y: -1}
+      - {x: 0.375, y: -0.75}
+      - {x: 0.625, y: -0.25}
+      - {x: 0.25, y: 1}
+      - {x: -0.1875, y: 1}
       - {x: -0.625, y: -0.25}
-      - {x: -0.25, y: -0.98}
+      - {x: -0.375, y: -0.75}
+      - {x: -0.375, y: -1}
 --- !u!114 &9107230218583875905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,43 +210,50 @@ MonoBehaviour:
   acceleration: 5
   deceleration: 20
   velPower: 0.9
-  jumpForce: 5
-  jumpSpeedMultiplier: 3.2
+  facingRight: 0
+  jumpForce: 900
+  jumpSpeedMultiplier: 1
   jumpCoyoteTime: 0.15
   jumpBufferTime: 0.1
   jumpCutMultiplier: 0.1
   fallGravityMultiplier: 2.5
-  airTimeThreshold: 0.4
-  airTimeLossRate: 0.08
+  jumpMoveSpeed: 12
+  jumpAcceleration: 10
+  jumpDeceleration: 0.1
+  jumpVelPower: 0.9
+  shortJumpTimeThreshold: 100
+  shortJumpReduction: 1.1
   bouncesRemaining: 0
   maxBounces: 7
   isBouncing: 0
-  bounceMomentum: 1700
-  bounceMomentumDecayRate: 120
+  bounceMomentum: 2000
+  bounceMomentumDecayRate: 100
+  currentBounceMomentum: 0
   bounceMass: 9
   regularMass: 1
   bounceDrag: 2.5
   regularDrag: 0.5
   bounceMoveMultiplier: 300
-  bounceGravityMultiplier: 2
+  bounceGravityMultiplier: 3
   bounceFallGravityMultiplier: 5
-  horizontalInfluenceMultiplier: 0.4
-  verticalInfluenceMultiplier: 2
-  extraMomentumBuildRate: 20
+  horizontalInfluenceMultiplier: 0.3
+  verticalInfluenceMultiplier: 2.5
+  extraMomentumBuildRate: 25
   extraMomentum: 0
   afterBounceAirTime: 0.1
   currentAfterBounceAirTime: 0
   afterBounceAirTimeGravityMultiplier: 0.02
   verticleBounceMomentumLoss: 5
   horizontalBounceMomentumLoss: 5
-  leftoverMomentumLossRate: 1.8
-  leftoverMomentumLossPercentageThreshold: 0.5
+  leftoverMomentumLossRate: 1.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  bounceMode: {fileID: -4154336704712441092, guid: 53ffee92211e4a64ba44141694ba3c73, type: 3}
-  normalMode: {fileID: -2400533203064184042, guid: 53ffee92211e4a64ba44141694ba3c73, type: 3}
+  bounceMode: {fileID: -4154336704712441092, guid: 41732f0eb68fc394d8488d060e153212, type: 3}
+  normalMode: {fileID: -2400533203064184042, guid: 41732f0eb68fc394d8488d060e153212, type: 3}
   cheatmodeAction: {fileID: -611638268938300185, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   timescale: 1
   spawnAtStart: 1
   cheatmode: 0
+  iFrames: 0.3
+  iFrameTimer: 0

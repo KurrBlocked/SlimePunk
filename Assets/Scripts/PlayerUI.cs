@@ -27,9 +27,9 @@ public class PlayerUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player.bouncesRemaining >= 0)
+        if (player.bouncesRemaining > 0)
         {
-            textMeshPro.text = "" + (player.bouncesRemaining);
+            textMeshPro.text = "" + (player.bouncesRemaining - 1);
         }
         else
         {

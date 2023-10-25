@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public float acceleration = 5f;
     public float deceleration = 20f;
     public float velPower = 0.9f;
-
+    public bool facingRight;
 
     //Jump Variables
     public float jumpForce = 5f;
@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
 
     public float bounceMomentum = 1700f;
     public float bounceMomentumDecayRate = 120f;
-    private float currentBounceMomentum = 0f;
+    public float currentBounceMomentum = 0f;
 
     public float bounceMass = 9f;
     public float regularMass = 1f;
@@ -72,7 +72,6 @@ public class PlayerController : MonoBehaviour
     public float verticleBounceMomentumLoss = 5f;
     public float horizontalBounceMomentumLoss = 5f;
     public float leftoverMomentumLossRate = 1.5f;
-    public float leftoverMomentumLossPercentageThreshold = 0.5f;
     private float jumpPressTime = 0f;
     #endregion
 
@@ -103,14 +102,19 @@ public class PlayerController : MonoBehaviour
     public bool spawnAtStart = true;
     public bool cheatmode = false;
 
+
+    public float iFrames = 1f;
+    public float iFrameTimer;
     // Start is called before the first frame update
     void Awake()
     {
+        facingRight = true;
         healthCount = maxHealth;
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         bounceModeCollider = GetComponent<CircleCollider2D>();
         regularModeCollider = GetComponent<PolygonCollider2D>();
+        iFrameTimer = 0f;
         currentBounceMomentum = 0f;
         extraMomentum = 0f;
         bounceDirection = Vector2.zero;
@@ -175,6 +179,23 @@ public class PlayerController : MonoBehaviour
         {
             cheatmode = !cheatmode;
         }
+        if (moveInput.x < 0)
+        {
+            facingRight = false;
+        }
+        if (moveInput.x > 0)
+        {
+            facingRight = true;
+        }
+        if (bounceDirection.x < 0)
+        {
+            facingRight = false;
+        }
+        if (bounceDirection.x > 0)
+        {
+            facingRight = true;
+        }
+        spriteRenderer.flipX = !facingRight;
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -241,6 +262,7 @@ public class PlayerController : MonoBehaviour
     {
         lastGroundedTime -= Time.deltaTime;
         lastJumpTime -= Time.deltaTime;
+        iFrameTimer -= Time.deltaTime;
         if (currentAfterBounceAirTime > 0)
         {
             currentAfterBounceAirTime -= Time.deltaTime;
@@ -330,8 +352,9 @@ public class PlayerController : MonoBehaviour
         if (bouncesRemaining == 0  && isBouncing)
         {
             rb.AddForce(Vector2.up, ForceMode2D.Impulse);
+            isBouncing = false;
         }
-        else if (isBouncing && bouncesRemaining > 0)
+        if (isBouncing && bouncesRemaining > 0)
         {
             spriteRenderer.sprite = bounceMode;
             rb.mass = bounceMass;
@@ -353,7 +376,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.contacts.Length != 0)
         {
-            if (collision.collider.tag == "Hazard")
+            if (collision.collider.tag == "HardHazard")
             {
                 if (!cheatmode)
                 {
@@ -361,16 +384,24 @@ public class PlayerController : MonoBehaviour
                 }
                 Respawn();
             }
+            else if (collision.collider.tag == "SoftHazard" )
+            {
+                if (!isBouncing && iFrameTimer <= 0f)
+                {
+                    healthCount--;
+                    iFrameTimer = iFrames;
+                }
+            }
             else
             {
                 Vector2 norm1 = new Vector2(Mathf.RoundToInt(collision.contacts[0].normal.x), Mathf.RoundToInt(collision.contacts[0].normal.y)).normalized;
                 if (isBouncing)
                 {
-                    float leftoverMomentum = currentBounceMomentum;
+                    float leftoverMomentum = currentBounceMomentum - bounceMomentum/leftoverMomentumLossRate;
                     currentBounceMomentum = bounceMomentum + extraMomentum;
-                    if (leftoverMomentum / currentBounceMomentum < leftoverMomentumLossPercentageThreshold)
+                    if (leftoverMomentum > 0)
                     {
-                        currentBounceMomentum += leftoverMomentum / leftoverMomentumLossRate;
+                        currentBounceMomentum += leftoverMomentum;
                     }
                     extraMomentum = 0f;
                     bouncesRemaining--;
@@ -427,12 +458,21 @@ public class PlayerController : MonoBehaviour
         {
             healthCount = maxHealth;
         }
+        if (collision.tag == "SoftHazard")
+        {
+            if (!isBouncing && iFrameTimer <= 0f)
+            {
+                healthCount--;
+                iFrameTimer = iFrames;
+            }
+        }
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.tag == "Hazard")
+        if (collision.tag == "Hazard" && iFrameTimer <= 0f)
         {
             healthCount--;
+            iFrameTimer = iFrames;
         }
     }
     private void calculateBounceDirection(Vector2 normal)

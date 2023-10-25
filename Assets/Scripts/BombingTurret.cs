@@ -4,37 +4,78 @@ using UnityEngine;
 
 public class BombingTurret : MonoBehaviour
 {
-    public float fireRate = 10f;
+    public float fireRate = 20f;
     public bool inRange;
     private float fireTimer;
 
-    public PlayerController playerStats;
-    public GameObject explosionPrefab;
+    public float bombingInterval = 5f;
+    private float bombingTimer;
 
+    public PlayerController playerStats;
+    
 
     public PolygonCollider2D normalCollider;
     public BoxCollider2D bounceCollider;
-    public GameObject explosion;
+
+    private int bombCount;
+    public int maxBombCount = 3;
+    private bool  isLoaded;
+
+    public GameObject explosionPrefab;
+
+    public GameObject[] explosions;
 
     // Start is called before the first frame update
     void Start()
     {
         inRange = false;
         fireTimer = 0;
+        bombCount = 0;
+        isLoaded = false;
+        explosions = new GameObject[maxBombCount];
+        playerStats = FindAnyObjectByType<PlayerController>();
+
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (inRange)
+        if (isLoaded)
         {
-            fireTimer += 0.1f;
+            if (inRange)
+            {
+                bombingTimer += 0.1f;
+            }
+            else
+            {
+                bombingTimer = 0f;
+                isLoaded = false;
+            }
+            if (bombingTimer > bombingInterval)
+            {
+                bombingTimer = 0f;
+                if (bombCount > 0)
+                {
+                    bombCount--;
+                    Fire(playerStats.transform.position);
+                }
+                else
+                {
+                    isLoaded = false;
+                }
+            }
         }
         else
         {
-            fireTimer = 0f;
+            if (inRange)
+            {
+                fireTimer += 0.1f;
+            }
+            else
+            {
+                fireTimer = 0f;
+            }
         }
-        
         inRange = false;
     }
     private void Update()
@@ -55,11 +96,13 @@ public class BombingTurret : MonoBehaviour
     {
         if (collision.collider.tag == "Player" && playerStats.isBouncing == true)
         {
-            if (explosion != null)
+            foreach (GameObject exp in explosions)
             {
-                explosion.SetActive(false);
+                if (exp != null)
+                {
+                    exp.SetActive(false);
+                }
             }
-            
             Destroy(gameObject);
         }
     }
@@ -69,17 +112,17 @@ public class BombingTurret : MonoBehaviour
         if (other.tag == "Player")
         {
             inRange = true;
-            if (fireTimer > fireRate)
+            if (fireTimer > fireRate && !isLoaded)
             {
                 fireTimer = 0;
-                Fire(other.transform.position);
+                isLoaded = true;
+                bombCount = maxBombCount;
             }
         }
     }
 
     private void Fire(Vector3 position)
     {
-        Debug.Log("Pew");
-        explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
+        explosions[bombCount] = Instantiate(explosionPrefab, position, Quaternion.identity);
     }
 }

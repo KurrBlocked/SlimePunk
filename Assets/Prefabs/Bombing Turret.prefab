@@ -125,12 +125,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5db1a2491e9858f4a90f81a157745732, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireRate: 10
+  fireRate: 8
   inRange: 0
+  bombingInterval: 2
   playerStats: {fileID: 0}
-  explosionPrefab: {fileID: 5785870268525722692, guid: a00d9f8317faa794b949c072f9b610ea, type: 3}
   normalCollider: {fileID: -3614683508825530838}
   bounceCollider: {fileID: 5042744255401441837}
+  maxBombCount: 5
+  explosionPrefab: {fileID: 5785870268525722692, guid: a00d9f8317faa794b949c072f9b610ea, type: 3}
+  explosions: []
 --- !u!50 &6394645432261449744
 Rigidbody2D:
   serializedVersion: 4

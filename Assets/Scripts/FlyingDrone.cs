@@ -10,12 +10,17 @@ public class FlyingDrone : MonoBehaviour
 
     public PlayerController playerStats;
     public GameObject bulletPrefab;
+    private int currentTravelPoint;
+    public Vector2[] travelPoints;
+    public float flySpeed = 0.1f;
 
     // Start is called before the first frame update
     void Start()
     {
+        currentTravelPoint = 0;
         inRange = false;
         fireTimer = 0;
+        playerStats = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -29,8 +34,30 @@ public class FlyingDrone : MonoBehaviour
         {
             fireTimer = 0f;
         }
-
         inRange = false;
+
+        if (travelPoints.Length > 1f)
+        {
+            if (transform.position.x != travelPoints[currentTravelPoint].x)
+            {
+                float flyDirection = Mathf.Sign(transform.position.x - travelPoints[currentTravelPoint].x) * -1f;
+                transform.position = new Vector2(transform.position.x + flySpeed * flyDirection, transform.position.y);
+            }
+            if (transform.position.y != travelPoints[currentTravelPoint].y)
+            {
+                float flyDirection = Mathf.Sign(transform.position.y - travelPoints[currentTravelPoint].y) * -1f;
+                transform.position = new Vector2(transform.position.x, transform.position.y + flySpeed * flyDirection);
+            }
+
+            if (Mathf.Round(travelPoints[currentTravelPoint].x) == Mathf.Round(transform.position.x) && Mathf.Round(travelPoints[currentTravelPoint].y) == Mathf.Round(transform.position.y))
+            {
+                currentTravelPoint++;
+                if (currentTravelPoint == travelPoints.Length)
+                {
+                    currentTravelPoint = 0;
+                }
+            }
+        }
     }
     private void Update()
     {

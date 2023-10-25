@@ -24,7 +24,7 @@ public class BombingTurretExplosion : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer > (duration - 0.2f))
+        if (timer > (duration - 0.14f))
         {
             spriteRenderer.sprite = explosion;
             gameObject.tag = "Hazard";
