@@ -243,10 +243,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 19.55556, y: -13}
-      - {x: 19.55556, y: 9}
-      - {x: -19.555555, y: 9}
-      - {x: -19.55556, y: -13}
+    - - {x: 20, y: -13}
+      - {x: 20, y: 9}
+      - {x: -20, y: 9}
+      - {x: -20, y: -13}
 --- !u!114 &7229910375014944809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,4 +259,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b94b942acf15b49a59326d8476aa10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 7229910374655365371}
+  cam: {fileID: 7229910374655365371}

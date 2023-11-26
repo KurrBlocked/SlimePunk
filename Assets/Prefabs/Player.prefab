@@ -13,11 +13,13 @@ GameObject:
   - component: {fileID: 9107230218583875907}
   - component: {fileID: 8421782267247770634}
   - component: {fileID: 7491175873084746349}
+  - component: {fileID: 5065336336745081055}
   - component: {fileID: 9107230218583875905}
   - component: {fileID: 1013608887230215841}
+  - component: {fileID: 651896098994488114}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30,7 +32,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9107230218583875966}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.58, y: 1.07, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -76,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2400533203064184042, guid: 41732f0eb68fc394d8488d060e153212, type: 3}
+  m_Sprite: {fileID: -2528762819574695543, guid: fb46f5c086c372c40bf7f67ed4d15543, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -149,14 +151,40 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.375, y: -1}
+    - - {x: 0.375, y: -0.97}
       - {x: 0.375, y: -0.75}
       - {x: 0.625, y: -0.25}
       - {x: 0.25, y: 1}
       - {x: -0.1875, y: 1}
       - {x: -0.625, y: -0.25}
       - {x: -0.375, y: -0.75}
-      - {x: -0.375, y: -1}
+      - {x: -0.375, y: -0.97}
+--- !u!61 &5065336336745081055
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9107230218583875966}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.07031688}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 2}
+    newSize: {x: 2, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.2, y: 0.05936622}
+  m_EdgeRadius: 0
 --- !u!114 &9107230218583875905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,9 +230,11 @@ MonoBehaviour:
   movementAction: {fileID: -8081643727733329304, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   jumpAction: {fileID: -3043690351501930273, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   bounceAction: {fileID: -3586376901136770201, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
+  pauseAction: {fileID: 6292455244947525, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
+  restartLevelAction: {fileID: -611638268938300185, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
   startPosition: {x: -14, y: 0}
   checkpointManager: {fileID: 0}
-  maxHealth: 5
+  maxHealth: 8
   healthCount: 0
   moveSpeed: 14
   acceleration: 5
@@ -224,7 +254,7 @@ MonoBehaviour:
   shortJumpTimeThreshold: 100
   shortJumpReduction: 1.1
   bouncesRemaining: 0
-  maxBounces: 7
+  maxBounces: 8
   isBouncing: 0
   bounceMomentum: 2000
   bounceMomentumDecayRate: 100
@@ -233,7 +263,7 @@ MonoBehaviour:
   regularMass: 1
   bounceDrag: 2.5
   regularDrag: 0.5
-  bounceMoveMultiplier: 300
+  bounceMoveMultiplier: 350
   bounceGravityMultiplier: 3
   bounceFallGravityMultiplier: 5
   horizontalInfluenceMultiplier: 0.3
@@ -243,17 +273,44 @@ MonoBehaviour:
   afterBounceAirTime: 0.1
   currentAfterBounceAirTime: 0
   afterBounceAirTimeGravityMultiplier: 0.02
-  verticleBounceMomentumLoss: 5
+  verticleBounceMomentumLoss: 10
   horizontalBounceMomentumLoss: 5
   leftoverMomentumLossRate: 1.2
+  zeroBounceInfluenceHorizontal: 1
+  bounceInput: 0
+  talkFasterInput: 0
+  nextDialogueInput: 0
+  pausePressedInput: 0
+  restartLevelInput: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  bounceMode: {fileID: -4154336704712441092, guid: 41732f0eb68fc394d8488d060e153212, type: 3}
-  normalMode: {fileID: -2400533203064184042, guid: 41732f0eb68fc394d8488d060e153212, type: 3}
-  cheatmodeAction: {fileID: -611638268938300185, guid: 27ba6896464e7bd4889535d823cd7429, type: 3}
-  timescale: 1
+  animator: {fileID: 0}
   spawnAtStart: 1
-  cheatmode: 0
-  iFrames: 0.3
+  freezePlayerMovement: 0
+  iFrames: 1.2
   iFrameTimer: 0
+  respawnTimer: 0
+  respawnTime: 0.3
+  isDead: 0
+--- !u!95 &651896098994488114
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9107230218583875966}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b8ad2f6fd3b77b341ae14baae836db23, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

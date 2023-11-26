@@ -7,46 +7,37 @@ public class DialogueManager : MonoBehaviour
 {
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
-
+    public PlayerController player;
     public Animator animator;
 
     public Queue<string> sentences;
-    private int timer;
-    public int waitTimePerWord = 60;
+    public float waitTimePerWord = 60;
     public int extraBeginningDialogueTime = 5;
-    private bool lastSentence;
+
 
     public float textSpeed = 0.07f;
     public float initialTextDelay = 1f;
+    public int periodWaitTime = 6;
+    public bool isTyping;
+    public bool isPlayerFrozen;
+    public DialogueTrigger currentTrigger;
+
     void Start()
     {
-        timer = -1;
+        isTyping = false;
         sentences = new Queue<string>();
-        lastSentence = false;
+        player = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
-    private void FixedUpdate()
-    {
-        if (timer >= 0)
-        {
-            timer --;
-        }
-        if (!(sentences.Count == 0) && (timer == 0 && timer % waitTimePerWord == 0))
+    private void Update()
+    {  
+        if (player.nextDialogueInput && !isTyping && isPlayerFrozen)
         {
             DisplayNextSentence();
-            if (sentences.Count == 0)
-            {
-                lastSentence = true;
-            }
-        }
-        if (lastSentence && (timer == 0 && timer % waitTimePerWord == 0))
-        {
-            EndDialogue();
-            lastSentence = false;
         }
     }
-    public void StartDialogue(Dialogue dialogue)
+    public void StartDialogue(Dialogue dialogue, DialogueTrigger dTrigger)
     {
         sentences.Clear();
 
@@ -57,36 +48,73 @@ public class DialogueManager : MonoBehaviour
         }
         nameText.text = dialogue.name;
         DisplayNextSentence();
-        timer += extraBeginningDialogueTime;
+        if (dialogue.freezeMovementTillDone)
+        {
+            player.freezePlayerMovement = true;
+            isPlayerFrozen = true;
+        }
+        else
+        {
+            isPlayerFrozen = false;
+        }
+        currentTrigger = dTrigger;
     }
 
     public void DisplayNextSentence()
     {
+        isTyping = true;
         if (sentences.Count == 0)
         {
             EndDialogue();
             return;
         }
-
         string sentence = sentences.Dequeue();
-        timer = sentence.Length * waitTimePerWord;
         StopAllCoroutines();
         StartCoroutine(TypeSentence(sentence));
     }
-
     IEnumerator TypeSentence(string sentence)
     {
-        yield return new WaitForSeconds(initialTextDelay);
         dialogueText.text = "";
+        yield return new WaitForSeconds(initialTextDelay);
+        int index = 0;
         foreach (char letter in sentence.ToCharArray())
         {
+            index++;
             dialogueText.text += letter;
-            yield return new WaitForSeconds(textSpeed); ;
+            if (!player.talkFasterInput)
+            {
+                isTyping = true;
+                if ((letter == '.') || (letter == '?') || (letter == '!'))
+                {
+                    yield return new WaitForSeconds(textSpeed * periodWaitTime);
+                    FindObjectOfType<AudioManager>().Play("Talk");
+                }
+                else if (index % 3 == 0 )
+                {
+                    FindObjectOfType<AudioManager>().Play("Talk");
+                }
+                yield return new WaitForSeconds(textSpeed);
+            }
+        }
+        player.talkFasterInput = false;
+        isTyping = false;
+        if (!isPlayerFrozen)
+        {
+            yield return new WaitForSeconds(waitTimePerWord * sentence.Length);
+            DisplayNextSentence();
         }
     }
-
+    IEnumerator AddDelayBeforeClosing(float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        dialogueText.text = "";
+        animator.SetBool("IsOpen", false);
+        player.freezePlayerMovement = false;
+        isTyping = false;
+        currentTrigger.dialogueIsFinished = true;
+    }
     void EndDialogue()
     {
-        animator.SetBool("IsOpen", false);
+        StartCoroutine(AddDelayBeforeClosing(initialTextDelay));
     }
 }

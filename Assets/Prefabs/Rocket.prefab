@@ -102,9 +102,10 @@ MonoBehaviour:
   rocket: {fileID: 21300000, guid: 79c9e43ede6d4c74bb165275603a1208, type: 3}
   explosion: {fileID: 21300000, guid: 9f4f8c2fda9c1764bb281d9305d6a8e6, type: 3}
   duration: 0.2
-  missileSpeed: 0.3
-  speedTurnReductionRate: 0.9
-  rotationSpeed: 300
+  missileSpeed: 0.8
+  speedTurnReductionRate: 0.96
+  rotationSpeed: 275
+  maxVelocity: 26
 --- !u!61 &1753386043709941498
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -118,7 +119,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.08554268, y: 0.03400421}
+  m_Offset: {x: -0.016268015, y: 0.03400421}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -129,7 +130,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.4906578, y: 0.2259674}
+  m_Size: {x: 1.3521085, y: 0.2259674}
   m_EdgeRadius: 0
 --- !u!50 &1753386043709941499
 Rigidbody2D:

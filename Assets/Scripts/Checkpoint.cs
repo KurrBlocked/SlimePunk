@@ -13,11 +13,18 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        reached = true;
+        if (collision.tag == "Player")
+        {
+            reached = true;
+        }
+        
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        reached = false;
+        if (collision.tag == "Player")
+        {
+            reached = false;
+        }
     }
 }

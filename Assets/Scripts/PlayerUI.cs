@@ -15,6 +15,7 @@ public class PlayerUI : MonoBehaviour
 
     void Start()
     {
+        player = GameObject.Find("Player").GetComponent<PlayerController>();
         localHealthTracker = player.healthCount;
         healthTokens = new GameObject[player.healthCount];
         for (int x = 0; x < player.maxHealth; x++)

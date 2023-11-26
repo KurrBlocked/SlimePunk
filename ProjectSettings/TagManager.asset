@@ -11,6 +11,9 @@ TagManager:
   - Enemy
   - HardHazard
   - SoftHazard
+  - Flying
+  - Boss
+  - Dialogue
   layers:
   - Default
   - TransparentFX

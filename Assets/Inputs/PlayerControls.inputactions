@@ -33,9 +33,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CheatMode",
+                    "name": "RestartLevel",
                     "type": "Button",
                     "id": "dbee2249-63a3-45c5-adae-455e28791b26",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "f281d58d-aeb5-4498-bf64-be8ab357cf56",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -123,11 +132,22 @@
                 {
                     "name": "",
                     "id": "30af9603-b6aa-41b8-888d-132762bfc91b",
-                    "path": "<Keyboard>/g",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CheatMode",
+                    "action": "RestartLevel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "20182d80-deec-4291-9ed2-e61aa24e634c",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -4,23 +4,23 @@ using UnityEngine;
 
 public class CameraZone : MonoBehaviour
 {
-    public GameObject camera;
+    public GameObject cam;
     private void Awake()
     {
-        camera.SetActive(false);
+        cam.SetActive(false);
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            camera.SetActive(true);
+            cam.SetActive(true);
         }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            camera.SetActive(false);
+            cam.SetActive(false);
         }
     }
 }

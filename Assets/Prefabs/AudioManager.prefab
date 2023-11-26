@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7196059524861771714
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7196059524861771712}
+  - component: {fileID: 7196059524861771715}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7196059524861771712
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7196059524861771714}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7196059524861771715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7196059524861771714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6604fed9063e1c04a98994977bedf905, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: PlayerBounce
+    clip: {fileID: 8300000, guid: 7e11c4d8cd39cc040b0b550c6faae2ed, type: 3}
+    volume: 0.2
+    pitch: 0.7
+    source: {fileID: 0}
+  - name: PlayerHit
+    clip: {fileID: 8300000, guid: 597314baa1aaa354ca96c78fd04fc175, type: 3}
+    volume: 0.402
+    pitch: 1
+    source: {fileID: 0}
+  - name: Break
+    clip: {fileID: 8300000, guid: fec55016b172d7c4b9c980bf3016f3b8, type: 3}
+    volume: 0.195
+    pitch: 0.913
+    source: {fileID: 0}
+  - name: TurretPrimed
+    clip: {fileID: 8300000, guid: 986df0673e979fd44b53367d42cf4a05, type: 3}
+    volume: 0.2
+    pitch: 1
+    source: {fileID: 0}
+  - name: ExplosionPrimed
+    clip: {fileID: 8300000, guid: 73429ce25aa729745a610dfced954b51, type: 3}
+    volume: 0.2
+    pitch: 1
+    source: {fileID: 0}
+  - name: SmallExplosion
+    clip: {fileID: 8300000, guid: 51542a57648faa740af7ea9f953d6592, type: 3}
+    volume: 0.277
+    pitch: 0.348
+    source: {fileID: 0}
+  - name: BigExplosion
+    clip: {fileID: 8300000, guid: c24ed8b3d5f4b074ebdcf3f0e2c02817, type: 3}
+    volume: 0.204
+    pitch: 0.549
+    source: {fileID: 0}
+  - name: Laser
+    clip: {fileID: 8300000, guid: 21e6b7ffc3acbfa4cbb45b5b7ad76383, type: 3}
+    volume: 0.267
+    pitch: 2.215
+    source: {fileID: 0}
+  - name: DoorOpen
+    clip: {fileID: 8300000, guid: 58abfd120563d09459cb90f46d580105, type: 3}
+    volume: 0.267
+    pitch: 1
+    source: {fileID: 0}
+  - name: BomberPrimed
+    clip: {fileID: 8300000, guid: 3a323de121b06244fbd0b4998d2df0c5, type: 3}
+    volume: 0.267
+    pitch: 1
+    source: {fileID: 0}
+  - name: RocketLaunched
+    clip: {fileID: 8300000, guid: 02d6eb5671e486c4fb7d35852cf35f81, type: 3}
+    volume: 0.267
+    pitch: 0.8
+    source: {fileID: 0}
+  - name: Healed
+    clip: {fileID: 8300000, guid: d5b90850ab9573d49ac729e7481d60c4, type: 3}
+    volume: 0.267
+    pitch: 1.847
+    source: {fileID: 0}
+  - name: Talk
+    clip: {fileID: 8300000, guid: 569af0352131e1f4e95db94936d45d80, type: 3}
+    volume: 0.045
+    pitch: 2.716
+    source: {fileID: 0}
+  - name: KnivesOut
+    clip: {fileID: 8300000, guid: a77132fc94beeac4cb371392edc7fbac, type: 3}
+    volume: 1
+    pitch: 1.532
+    source: {fileID: 0}
+  - name: BootUp
+    clip: {fileID: 8300000, guid: 2866cb2d4efe7554fb84e47c5fd8b545, type: 3}
+    volume: 0.461
+    pitch: 1.087
+    source: {fileID: 0}
+  - name: ElectricHit
+    clip: {fileID: 8300000, guid: de72b30fc01d6f14eb8afea47ea036aa, type: 3}
+    volume: 0.246
+    pitch: 1.087
+    source: {fileID: 0}
+  - name: PhaseChange
+    clip: {fileID: 8300000, guid: f2c9c939165b03049a89c6161db864d2, type: 3}
+    volume: 0.246
+    pitch: 1.561
+    source: {fileID: 0}

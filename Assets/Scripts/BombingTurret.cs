@@ -36,7 +36,6 @@ public class BombingTurret : MonoBehaviour
         playerStats = FindAnyObjectByType<PlayerController>();
 
     }
-
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -67,6 +66,10 @@ public class BombingTurret : MonoBehaviour
         }
         else
         {
+            if (fireTimer > (fireRate * 0.9f) && fireTimer < (fireRate * 0.9f) + 0.1f)
+            {
+                FindObjectOfType<AudioManager>().Play("BomberPrimed");
+            }
             if (inRange)
             {
                 fireTimer += 0.1f;
@@ -104,9 +107,9 @@ public class BombingTurret : MonoBehaviour
                 }
             }
             Destroy(gameObject);
+            FindObjectOfType<AudioManager>().Play("Break");
         }
     }
-
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.tag == "Player")
@@ -120,7 +123,6 @@ public class BombingTurret : MonoBehaviour
             }
         }
     }
-
     private void Fire(Vector3 position)
     {
         explosions[bombCount] = Instantiate(explosionPrefab, position, Quaternion.identity);

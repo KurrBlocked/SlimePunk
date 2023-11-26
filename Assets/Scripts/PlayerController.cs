@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public InputActionReference movementAction;
     public InputActionReference jumpAction;
     public InputActionReference bounceAction;
+    public InputActionReference pauseAction;
+    public InputActionReference restartLevelAction;
     private Rigidbody2D rb;
     #endregion
 
@@ -73,13 +75,18 @@ public class PlayerController : MonoBehaviour
     public float horizontalBounceMomentumLoss = 5f;
     public float leftoverMomentumLossRate = 1.5f;
     private float jumpPressTime = 0f;
+    public float zeroBounceInfluenceHorizontal = 2f;
     #endregion
 
     //Inputs
     private Vector2 moveInput;
     private bool jumpWasReleased;
     private bool jumpIsPressedInput;
-    private bool bounceInput;
+    public bool bounceInput;
+    public bool talkFasterInput;
+    public bool nextDialogueInput;
+    public bool pausePressedInput;
+    public bool restartLevelInput;
 
     //Ground Check
     public LayerMask groundLayer;
@@ -92,37 +99,40 @@ public class PlayerController : MonoBehaviour
 
     //Sprites
     private SpriteRenderer spriteRenderer;
-    public Sprite bounceMode;
-    public Sprite normalMode;
+    public Animator animator;
 
 
     //Testing variables
-    public InputActionReference cheatmodeAction;
-    public float timescale = 1f;
     public bool spawnAtStart = true;
-    public bool cheatmode = false;
+    public bool freezePlayerMovement = false;
 
 
     public float iFrames = 1f;
     public float iFrameTimer;
+
+    public float respawnTimer;
+    public float respawnTime = 1f;
+    public bool isDead;
     // Start is called before the first frame update
     void Awake()
     {
+        isDead = false;
         facingRight = true;
         healthCount = maxHealth;
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         bounceModeCollider = GetComponent<CircleCollider2D>();
         regularModeCollider = GetComponent<PolygonCollider2D>();
+        animator = GetComponent<Animator>();
         iFrameTimer = 0f;
         currentBounceMomentum = 0f;
         extraMomentum = 0f;
         bounceDirection = Vector2.zero;
         currentAfterBounceAirTime = 0f;
         jumpWasReleased = true;
-        spriteRenderer.sprite = normalMode;
         isBouncing = false;
         isJumping = false;
+        talkFasterInput = false;
         gravityScale = rb.gravityScale;
         bounceModeCollider.enabled = isBouncing;
         regularModeCollider.enabled = !isBouncing;
@@ -136,21 +146,65 @@ public class PlayerController : MonoBehaviour
         movementAction.action.Enable();
         jumpAction.action.Enable();
         bounceAction.action.Enable();
-        cheatmodeAction.action.Enable();
+        restartLevelAction.action.Enable();
+        pauseAction.action.Enable();
     }
     private void OnDisable()
     {
         movementAction.action.Disable();
         jumpAction.action.Disable();
         bounceAction.action.Disable();
-        cheatmodeAction.action.Disable();
+        restartLevelAction.action.Disable();
+        pauseAction.action.Disable();
     }
     private void Update()
     {
+        if (!(iFrameTimer > iFrames - Time.deltaTime* 10f) && (respawnTimer <= 0))
+        {
+            animator.SetBool("GotHit", false);
+        }
+        if (healthCount <= 0 && !isDead)
+        {
+            freezePlayerMovement = true;
+            iFrameTimer = 100;
+            animator.SetBool("GotHit", true);
+        }
+        if (respawnTimer > 0)
+        {
+            respawnTimer -= Time.deltaTime;
+            if (respawnTimer <= 0  && healthCount > 0)
+            {
+                if (checkpointManager.lastReachedCheckpoint != -1)
+                {
+                    transform.position = checkpointManager.checkpoints[checkpointManager.lastReachedCheckpoint].transform.position;
+                }
+                else
+                {
+                    transform.position = startPosition;
+                }
+                freezePlayerMovement = false;
+            }
+        }
         #region Inputs
-        moveInput = movementAction.action.ReadValue<Vector2>();
-        jumpIsPressedInput = jumpAction.action.IsPressed();
-        bounceInput = bounceAction.action.WasPressedThisFrame();
+        if (!freezePlayerMovement)
+        {
+            talkFasterInput = false;
+            nextDialogueInput = false;
+            moveInput = movementAction.action.ReadValue<Vector2>();
+            jumpIsPressedInput = jumpAction.action.IsPressed();
+            bounceInput = bounceAction.action.WasPressedThisFrame();
+        }
+        else
+        {
+            moveInput = Vector2.zero;
+            jumpIsPressedInput = false;
+            bounceInput = false;
+            isBouncing = false;
+            talkFasterInput = jumpAction.action.IsPressed();
+            nextDialogueInput = jumpAction.action.WasPressedThisFrame();
+        }
+        pausePressedInput = pauseAction.action.WasPressedThisFrame();
+        restartLevelInput = restartLevelAction.action.WasPressedThisFrame();
         #endregion
         CheckGrounded();
         #region Bounce Influence Input
@@ -175,10 +229,6 @@ public class PlayerController : MonoBehaviour
             bounceVerticalInfluence = Mathf.Round(moveInput.y);
         }
         #endregion
-        if (cheatmodeAction.action.WasPressedThisFrame())
-        {
-            cheatmode = !cheatmode;
-        }
         if (moveInput.x < 0)
         {
             facingRight = false;
@@ -195,12 +245,20 @@ public class PlayerController : MonoBehaviour
         {
             facingRight = true;
         }
-        spriteRenderer.flipX = !facingRight;
+        if (Time.timeScale == 1)
+        {
+            spriteRenderer.flipX = !facingRight;
+            animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
+        }
+        animator.SetBool("IsDead", isDead);
+        if (isDead)
+        {
+            freezePlayerMovement = true;
+        }
     }
     // Update is called once per frame
     void FixedUpdate()
     {
-        Time.timeScale = timescale;
         TickTimers();
         Move();
         ToggleBounceMode();
@@ -311,13 +369,14 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 checkBoxPosition = transform.position + new Vector3(0f, -groundCheckBoxSize.y - 0.85f, 0f);
         isGrounded = Physics2D.OverlapBox(checkBoxPosition, groundCheckBoxSize, 0f, groundLayer);
+        animator.SetBool("IsGrounded", isGrounded);
         if (isBouncing)
         {
             isGrounded = false;
         }
         if (isGrounded)
         {
-
+            
             lastGroundedTime = jumpCoyoteTime;
             if (!isJumping && !jumpIsPressedInput)
             {
@@ -332,7 +391,8 @@ public class PlayerController : MonoBehaviour
         {
             isJumping = false;
         }
-        
+        animator.SetBool("IsJumping", isJumping);
+        animator.SetBool("IsFalling", (!isJumping && rb.velocity.y < -0.1));
     }
     private void Jump()
     {
@@ -342,6 +402,8 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Force);
         rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpSpeedMultiplier);
         isJumping = true;
+        
+        animator.SetBool("IsFalling", true);
     }
     private void ToggleBounceMode()
     {
@@ -349,24 +411,23 @@ public class PlayerController : MonoBehaviour
         bounceModeCollider.enabled = isBouncing;
         regularModeCollider.enabled = !isBouncing;
         //Add slight upwards force to prevent getting stuck to floor when leaving bouncemode
-        if (bouncesRemaining == 0  && isBouncing)
+        if (bouncesRemaining <= 0  && isBouncing)
         {
             rb.AddForce(Vector2.up, ForceMode2D.Impulse);
             isBouncing = false;
         }
         if (isBouncing && bouncesRemaining > 0)
         {
-            spriteRenderer.sprite = bounceMode;
+            animator.SetBool("IsBouncing", true);
             rb.mass = bounceMass;
             rb.drag = bounceDrag;
         }
         else
         {
-            isBouncing = false;
+            animator.SetBool("IsBouncing", false);
             currentBounceMomentum = 0f;
             extraMomentum = 0f;
             bounceDirection = Vector2.zero;
-            spriteRenderer.sprite = normalMode;
             rb.mass = regularMass;
             rb.drag = regularDrag;
         }
@@ -376,12 +437,10 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.contacts.Length != 0)
         {
-            if (collision.collider.tag == "HardHazard")
+            if (collision.collider.tag == "HardHazard" && respawnTimer <= 0)
             {
-                if (!cheatmode)
-                {
-                    healthCount--;
-                }
+                healthCount--;
+                FindObjectOfType<AudioManager>().Play("PlayerHit");
                 Respawn();
             }
             else if (collision.collider.tag == "SoftHazard" )
@@ -390,6 +449,8 @@ public class PlayerController : MonoBehaviour
                 {
                     healthCount--;
                     iFrameTimer = iFrames;
+                    animator.SetBool("GotHit", true);
+                    FindObjectOfType<AudioManager>().Play("PlayerHit");
                 }
             }
             else
@@ -397,6 +458,11 @@ public class PlayerController : MonoBehaviour
                 Vector2 norm1 = new Vector2(Mathf.RoundToInt(collision.contacts[0].normal.x), Mathf.RoundToInt(collision.contacts[0].normal.y)).normalized;
                 if (isBouncing)
                 {
+                    if (bouncesRemaining - 1 > 0) 
+                    {
+                        FindObjectOfType<AudioManager>().Play("PlayerBounce");
+                    }
+                    
                     float leftoverMomentum = currentBounceMomentum - bounceMomentum/leftoverMomentumLossRate;
                     currentBounceMomentum = bounceMomentum + extraMomentum;
                     if (leftoverMomentum > 0)
@@ -416,19 +482,26 @@ public class PlayerController : MonoBehaviour
                     }
                     
                     rb.gravityScale = gravityScale;
-                    if (collision.contacts.Length > 1)
+                    calculateBounceDirection(norm1);
+                    if (collision.collider.tag == "Flying")
                     {
-                        Vector2 norm2 = new Vector2(Mathf.RoundToInt(collision.contacts[1].normal.x), Mathf.RoundToInt(collision.contacts[1].normal.y)).normalized;
-                        calculateBounceDirection(norm1 + norm2);
+                        if (norm1.y < 0)
+                        {
+                            bounceDirection = Vector2.down;
+                        }
+                        else
+                        {
+                            bounceDirection = Vector2.up;
+                        }
+                        
                     }
-                    else
+                    if (bounceDirection.y < -0.9)//Downwards bounce adds greater rebound
                     {
-                        calculateBounceDirection(norm1);
+                        extraMomentum = 400;
                     }
-                    //Debug.Log("Collisions : " + collision.contacts.Length + "|| Normal : " + collision.contacts[0].normal + "|| Bounce Direction : " + bounceDirection + "|| Bounce Direction Influence : " + bounceDirectionalInfluence);
                 }
             }
-        }  
+        }
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -436,14 +509,17 @@ public class PlayerController : MonoBehaviour
         //Fixes sticking occured when in contact with 2 surfaces consecutively
         if (isBouncing)
         {
-            if (collision.contacts.Length > 1)
+            calculateBounceDirection(norm1);
+            if (collision.collider.tag == "Flying")
             {
-                Vector2 norm2 = new Vector2(Mathf.RoundToInt(collision.contacts[1].normal.x), Mathf.RoundToInt(collision.contacts[1].normal.y)).normalized;
-                calculateBounceDirection(norm1 + norm1);
-            }
-            else
-            {
-                calculateBounceDirection(norm1);
+                if (norm1.y < 0)
+                {
+                    bounceDirection = Vector2.down;
+                }
+                else
+                {
+                    bounceDirection = Vector2.up;
+                }
             }
             //Added to potentially fix a bug where it seems like if the player bounces at 0 bounces remaining and enters bounce mode at the same time, player does not recieve any momentum
             if (currentBounceMomentum == 0f)
@@ -451,12 +527,13 @@ public class PlayerController : MonoBehaviour
                 currentBounceMomentum = bounceMomentum;
             }
         }
-    }
+    } 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Heal")
         {
             healthCount = maxHealth;
+            FindObjectOfType<AudioManager>().Play("Healed");
         }
         if (collision.tag == "SoftHazard")
         {
@@ -464,6 +541,8 @@ public class PlayerController : MonoBehaviour
             {
                 healthCount--;
                 iFrameTimer = iFrames;
+                animator.SetBool("GotHit", true);
+                FindObjectOfType<AudioManager>().Play("PlayerHit");
             }
         }
     }
@@ -473,6 +552,8 @@ public class PlayerController : MonoBehaviour
         {
             healthCount--;
             iFrameTimer = iFrames;
+            animator.SetBool("GotHit", true);
+            FindObjectOfType<AudioManager>().Play("PlayerHit");
         }
     }
     private void calculateBounceDirection(Vector2 normal)
@@ -482,14 +563,14 @@ public class PlayerController : MonoBehaviour
         bounceDirection = Vector2.zero;
         if (Mathf.Abs(normal.x) > Mathf.Abs(normal.y))// Collision is left or right
         {
-            if (normal == new Vector2(-1, 0))
+            if (normal == new Vector2(-1, 0) || normal.x < -0.8f)
             {
                 //collision on right
                 if (bounceVerticalInfluence == 0)
                 {
                     if (rb.velocity.y < -1f)
                     {
-                        bounceVerticalInfluence = -1f;
+                        bounceVerticalInfluence = -0.5f;
                     }
                     else
                     {
@@ -499,14 +580,14 @@ public class PlayerController : MonoBehaviour
                 bounceDirection = new Vector2(-1f, bounceVerticalInfluence * verticalInfluenceMultiplier).normalized;            
                 bounceHorizontalInfluence = -1f;
             }
-            else if (normal == new Vector2(1, 0))
+            else if (normal == new Vector2(1, 0) || normal.x > 0.8f)
             {
                 //collision on left
                 if (bounceVerticalInfluence == 0)
                 {
                     if (rb.velocity.y < -1f)
                     {
-                        bounceVerticalInfluence = -1f;
+                        bounceVerticalInfluence = -0.5f;
                     }
                     else
                     {
@@ -519,43 +600,42 @@ public class PlayerController : MonoBehaviour
         }
         else // Collision is up or down
         {
-            if (normal == new Vector2(0, -1))
+            if (normal == new Vector2(0, -1) || normal.y < -0.8f)
             {
                 //collision on up
                 if (bounceHorizontalInfluence == 0f)
                 {
-                    if (rb.velocity.x > 0.5f)
+                    if (rb.velocity.x > zeroBounceInfluenceHorizontal)
                     {
                         bounceHorizontalInfluence = 1f;
                     }
-                    else if (rb.velocity.x < -0.5f)
+                    else if (rb.velocity.x < -zeroBounceInfluenceHorizontal)
                     {
                         bounceHorizontalInfluence = -1f;
                     }
                 }
                 bounceDirection = new Vector2(bounceHorizontalInfluence * horizontalInfluenceMultiplier * 2f, -1f).normalized;
             }
-            else if (normal == new Vector2(0, 1))
+            else if (normal == new Vector2(0, 1) || normal.y > 0.8f)
             {
                 //collision on down
                 if (bounceHorizontalInfluence == 0f)
                 {
-                    if (rb.velocity.x > 0.5f)
+                    if (rb.velocity.x > zeroBounceInfluenceHorizontal)
                     {
                         bounceHorizontalInfluence = 1f;
                     }
-                    else if (rb.velocity.x < -0.5f)
+                    else if (rb.velocity.x < -zeroBounceInfluenceHorizontal)
                     {
                         bounceHorizontalInfluence = -0.5f;
                     }
                 }
                 bounceDirection = new Vector2(bounceHorizontalInfluence * horizontalInfluenceMultiplier, 1f).normalized;
             }
-            else
-            {
-                //Diagonal collisions
-                bounceDirection = normal/1.5f;
-            }
+        }
+        if (Mathf.Abs(normal.x) == Mathf.Abs(normal.y))
+        {
+            bounceDirection = normal / 1.5f;
         }
         bounceDirection *= 1.1f;
     }
@@ -565,6 +645,10 @@ public class PlayerController : MonoBehaviour
         if (currentBounceMomentum - bounceMomentumDecayRate > 0)
         {
             currentBounceMomentum -= bounceMomentumDecayRate;
+            if (bounceDirection == Vector2.down)
+            {
+                extraMomentum += extraMomentumBuildRate;
+            }
         }
         else
         {
@@ -572,22 +656,18 @@ public class PlayerController : MonoBehaviour
             extraMomentum += extraMomentumBuildRate;
         }
     }
-    private void Respawn()
+    public void Respawn()
     {
+        freezePlayerMovement = true;
         isBouncing = false;
-        bouncesRemaining = maxBounces;
+        iFrameTimer = iFrames;
+        currentBounceMomentum = 0;
+        bouncesRemaining = 0;
         afterBounceAirTime = 0f;
         rb.velocity = Vector2.zero;
+        animator.SetBool("GotHit", true);
         ToggleBounceMode();
         CheckGrounded();
-        if (checkpointManager.lastReachedCheckpoint != -1)
-        {
-            transform.position = checkpointManager.checkpoints[checkpointManager.lastReachedCheckpoint].transform.position;
-        }
-        else 
-        {
-            transform.position = startPosition;
-        }
-
+        respawnTimer = respawnTime;
     }
 }

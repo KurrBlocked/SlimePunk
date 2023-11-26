@@ -12,6 +12,7 @@ public class Rocket : MonoBehaviour
     public float missileSpeed = 0.1f;
     public float speedTurnReductionRate = 0.9f;
     public float rotationSpeed = 100.0f;
+    public float maxVelocity = 50f;
 
     private CircleCollider2D explosionCollider;
     private Rigidbody2D rb;
@@ -24,6 +25,7 @@ public class Rocket : MonoBehaviour
         playerLocation = GameObject.Find("Player").transform;
         explosionCollider = GetComponent<CircleCollider2D>();
         explosionCollider.enabled = false;
+        FindObjectOfType<AudioManager>().Play("RocketLaunched");
     }
 
     // Update is called once per frame
@@ -47,11 +49,14 @@ public class Rocket : MonoBehaviour
         {
             rb.velocity *= speedTurnReductionRate;
         }
+
+        rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") || collision.CompareTag("WAF"))
         {
+            FindObjectOfType<AudioManager>().Play("BigExplosion");
             spriteRenderer.sprite = explosion;
             gameObject.tag = "Hazard";
             Destroy(gameObject, duration);

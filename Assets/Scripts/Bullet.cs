@@ -26,7 +26,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("WAF"))
         {
-            Destroy(gameObject, 0.02f);
+            Destroy(gameObject, 0.005f);
         }
     }
 }

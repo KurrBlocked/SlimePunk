@@ -8,6 +8,7 @@ public class BombingTurretExplosion : MonoBehaviour
     public Sprite aimSpot;
     public Sprite explosion;
     public float duration = 4f;
+    public float explosionDuration = 0.10f;
     public float timer;
 
 
@@ -15,7 +16,7 @@ public class BombingTurretExplosion : MonoBehaviour
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        
+        FindObjectOfType<AudioManager>().Play("ExplosionPrimed");
         spriteRenderer.sprite = aimSpot;
         Destroy(gameObject, duration);
     }
@@ -24,8 +25,9 @@ public class BombingTurretExplosion : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer > (duration - 0.14f))
+        if (timer > (duration - explosionDuration))
         {
+            FindObjectOfType<AudioManager>().Play("SmallExplosion");
             spriteRenderer.sprite = explosion;
             gameObject.tag = "Hazard";
         }

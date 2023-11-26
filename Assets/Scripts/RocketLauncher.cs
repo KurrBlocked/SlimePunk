@@ -12,12 +12,17 @@ public class RocketLauncher : MonoBehaviour
     public GameObject rocketPrefab;
     GameObject rocket;
 
+    private SpriteRenderer spriteRenderer;
+    public Sprite loaded;
+    public Sprite unloaded;
+
     // Start is called before the first frame update
     void Start()
     {
         inRange = false;
         fireTimer = 0;
         playerStats = FindAnyObjectByType<PlayerController>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -26,7 +31,11 @@ public class RocketLauncher : MonoBehaviour
 
         if (inRange)
         {
-            fireTimer += 0.1f;
+            if (rocket == null)
+            {
+                fireTimer += 0.1f;
+                spriteRenderer.sprite = loaded;
+            }
         }
         else
         {
@@ -44,6 +53,7 @@ public class RocketLauncher : MonoBehaviour
         if (collision.collider.tag == "Player" && playerStats.isBouncing == true)
         {
             Destroy(gameObject);
+            FindObjectOfType<AudioManager>().Play("Break");
         }
     }
 
@@ -52,6 +62,10 @@ public class RocketLauncher : MonoBehaviour
         if (other.tag == "Player")
         {
             inRange = true;
+            if (fireTimer > (fireRate * 0.9f) && fireTimer < (fireRate * 0.9f) + 0.1f)
+            {
+                FindObjectOfType<AudioManager>().Play("TurretPrimed");
+            }
             if (fireTimer > fireRate)
             {
                 fireTimer = 0;
@@ -62,10 +76,11 @@ public class RocketLauncher : MonoBehaviour
 
     private void Fire(Vector3 position)
     {
-        Vector2 direction = position - transform.position;
+        spriteRenderer.sprite = unloaded;
+        //Vector2 direction = position - transform.position;
         if (rocket == null)
         {
-            rocket = Instantiate(rocketPrefab, transform.position + new Vector3(0, 0.275f, 0), Quaternion.identity);
+            rocket = Instantiate(rocketPrefab, transform.position + new Vector3(0, 0.275f, 0), transform.rotation);
         }
         
     }

@@ -68,6 +68,7 @@ public class FlyingDrone : MonoBehaviour
         if (collision.collider.tag == "Player" && playerStats.isBouncing == true)
         {
             Destroy(gameObject);
+            FindObjectOfType<AudioManager>().Play("Break");
         }
     }
 
@@ -86,6 +87,7 @@ public class FlyingDrone : MonoBehaviour
 
     private void Fire(Vector3 position)
     {
+        FindObjectOfType<AudioManager>().Play("Laser");
         Vector2 direction = position - transform.position;
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
         bullet.GetComponent<Bullet>().SetTarget(direction);

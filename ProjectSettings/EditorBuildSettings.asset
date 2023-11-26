@@ -5,11 +5,32 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/Test.unity
-    guid: e189e24e446197243b9f762cc67c4cc4
+    path: Assets/Scenes/StartMenu.unity
+    guid: c9d7939597af41a48bd2daabcd55376c
+  - enabled: 1
+    path: Assets/Scenes/Instruction.unity
+    guid: 38f01c1d939355d459d6edb2a565a252
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: 1e7a6e54842aa3741ab48160d965252a
+  - enabled: 1
+    path: Assets/Scenes/PreRun.unity
+    guid: 88a1a9050937bea45872eeee3b0c3cad
+  - enabled: 1
+    path: Assets/Scenes/Showcase1.unity
+    guid: 9b4790d32d3db0a42bad806c29cde751
+  - enabled: 1
+    path: Assets/Scenes/Showcase2.unity
+    guid: 9569343bbd3fe5140aecf0ead3bbf2a1
+  - enabled: 1
+    path: Assets/Scenes/Boss1.unity
+    guid: 632c9d667cd1556418ca7c40a0084e1d
+  - enabled: 1
+    path: Assets/Scenes/RespawnAtBoss1.unity
+    guid: 8db8ba8d0c34d9d4c95d9d3dfff29b03
+  - enabled: 1
+    path: Assets/Scenes/EndScreen.unity
+    guid: 25c6ff1f86fbd2f40b3af0320be944b1
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: be7aa3b9fcedca24ebaefc8aa27879b3, type: 2}
